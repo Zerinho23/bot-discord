@@ -8,23 +8,16 @@ import {
   Activity, UserPlus, Server, ChevronRight, Bot, Settings, Menu, X
 } from "lucide-react";
 
-export function SidebarLayout({ children, guildId }: { children: React.ReactNode; guildId?: string }) {
-  const [location] = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const queryClient = useQueryClient();
-  const { data: user } = useGetMe({
-    query: { queryKey: getGetMeQueryKey(), retry: false }
-  });
+interface SidebarContentProps {
+  guildId?: string;
+  location: string;
+  user: { id: string; username: string; avatar?: string | null } | undefined;
+  onLogout: () => void;
+  onClose: () => void;
+  showCloseButton: boolean;
+}
 
-  const logout = useLogout({
-    mutation: {
-      onSuccess: () => {
-        queryClient.clear();
-        window.location.href = "/";
-      }
-    }
-  });
-
+function SidebarContent({ guildId, location, user, onLogout, onClose, showCloseButton }: SidebarContentProps) {
   const navItems = [
     { href: `/servers/${guildId}`, icon: Activity, label: "Resumen", exact: true, color: "text-blue-400" },
     { href: `/servers/${guildId}/verification`, icon: Shield, label: "Verificación", color: "text-green-400" },
@@ -34,25 +27,25 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
     { href: `/servers/${guildId}/invites`, icon: Users, label: "Invitaciones", color: "text-purple-400" },
   ];
 
-  const closeSidebar = () => setSidebarOpen(false);
-
-  const sidebarContent = (
+  return (
     <>
       <div className="h-14 flex items-center gap-3 px-4 border-b border-border">
         <div className="w-8 h-8 rounded-lg bg-[#5865F2] flex items-center justify-center shadow-lg shadow-[#5865F2]/30">
           <Bot className="w-4 h-4 text-white" />
         </div>
         <span className="font-bold text-base tracking-tight text-white">InfernBOT</span>
-        <button
-          className="ml-auto md:hidden text-muted-foreground hover:text-white transition-colors p-1"
-          onClick={closeSidebar}
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {showCloseButton && (
+          <button
+            className="ml-auto md:hidden text-muted-foreground hover:text-white transition-colors p-1"
+            onClick={onClose}
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       <div className="px-3 pt-3 pb-1">
-        <Link href="/servers" onClick={closeSidebar}>
+        <Link href="/servers" onClick={onClose}>
           <div className="flex items-center gap-2 px-2 py-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-white/5 transition-colors text-xs font-medium cursor-pointer">
             <Server className="w-3.5 h-3.5" />
             <span>Mis Servidores</span>
@@ -70,7 +63,7 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
             {navItems.map((item) => {
               const isActive = item.exact ? location === item.href : location.startsWith(item.href);
               return (
-                <Link key={item.href} href={item.href} onClick={closeSidebar}>
+                <Link key={item.href} href={item.href} onClick={onClose}>
                   <div className={`flex items-center gap-2.5 px-2.5 py-2 rounded-md transition-all text-sm cursor-pointer ${
                     isActive
                       ? "bg-white/10 text-white font-medium"
@@ -111,7 +104,7 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
               variant="ghost"
               size="icon"
               className="w-6 h-6 text-muted-foreground hover:text-destructive shrink-0"
-              onClick={() => logout.mutate()}
+              onClick={onLogout}
               title="Cerrar sesión"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -121,12 +114,33 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
       )}
     </>
   );
+}
+
+export function SidebarLayout({ children, guildId }: { children: React.ReactNode; guildId?: string }) {
+  const [location] = useLocation();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const { data: user } = useGetMe({
+    query: { queryKey: getGetMeQueryKey(), retry: false }
+  });
+
+  const logout = useLogout({
+    mutation: {
+      onSuccess: () => {
+        queryClient.clear();
+        window.location.href = "/";
+      }
+    }
+  });
+
+  const closeSidebar = () => setSidebarOpen(false);
+  const handleLogout = () => logout.mutate();
 
   return (
     <div className="flex h-screen bg-background text-foreground dark overflow-hidden">
       {/* Mobile top bar */}
       <div
-        className="md:hidden fixed top-0 left-0 right-0 z-40 h-13 flex items-center gap-3 px-4 border-b border-border shrink-0"
+        className="md:hidden fixed top-0 left-0 right-0 z-40 flex items-center gap-3 px-4 border-b border-border shrink-0"
         style={{ background: "hsl(230 15% 6%)", height: "52px" }}
       >
         <button
@@ -155,7 +169,14 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
         className="hidden md:flex w-60 shrink-0 flex-col border-r border-border"
         style={{ background: "hsl(230 15% 6%)" }}
       >
-        {sidebarContent}
+        <SidebarContent
+          guildId={guildId}
+          location={location}
+          user={user}
+          onLogout={handleLogout}
+          onClose={closeSidebar}
+          showCloseButton={false}
+        />
       </aside>
 
       {/* Mobile sidebar drawer */}
@@ -165,7 +186,14 @@ export function SidebarLayout({ children, guildId }: { children: React.ReactNode
         }`}
         style={{ background: "hsl(230 15% 6%)" }}
       >
-        {sidebarContent}
+        <SidebarContent
+          guildId={guildId}
+          location={location}
+          user={user}
+          onLogout={handleLogout}
+          onClose={closeSidebar}
+          showCloseButton={true}
+        />
       </aside>
 
       {/* Main content */}
