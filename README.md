@@ -1,137 +1,127 @@
 # InfernBOT + Nexus Control
 
-> Bot de Discord con verificación, bienvenidas, entradas, invitaciones y moderación — más un dashboard web completo para configurarlo todo sin tocar código.
+  > Bot de Discord con verificación, bienvenidas, tickets, invitaciones y moderación — más un dashboard web completo para configurarlo todo sin tocar código.
 
----
+  ---
 
-## ¿Qué hace?
+  ## ¿Qué hace?
 
-| Módulo | Funciones |
-|---|---|
-| **Verificación** | Panel con botón → código por DM → rol automático |
-| **Bienvenida** | Embed personalizable, DM, auto-rol |
-| **Tickets** | Sistema de tickets con categoría y rol de soporte |
-| **Moderación** | `/ban`, `/kick`, `/mute`, `/unmute`, `/warn`, `/warnings`, `/clear` + log de acciones |
-| **Invitaciones** | Rastreo en tiempo real, top invitadores con `/invite-top` |
+  | Módulo | Funciones |
+  |---|---|
+  | **Verificación** | Panel con botón → código por DM → rol automático |
+  | **Bienvenida** | Embed personalizable, DM de bienvenida, auto-rol, variables `{user}` `{server}` `{memberCount}` |
+  | **Tickets** | Panel con botón, categoría, rol de soporte, log de tickets |
+  | **Moderación** | Ban, kick, mute, warn, unban — con log y límite de advertencias |
+  | **Invitaciones** | Tracker de invites con ranking por servidor |
 
----
+  ---
 
-## Stack
+  ## Comandos slash (/`comando``)
 
-| Capa | Tecnología |
-|---|---|
-| Bot | discord.js 14 |
-| API | Express 5 + Drizzle ORM + PostgreSQL |
-| Dashboard | React 19 + Vite + TailwindCSS 4 |
-| Monorepo | pnpm workspaces + TypeScript 5 |
-| Validación | Zod v4 + drizzle-zod |
+  | Comando | Descripción |
+  |---|---|
+  | `/ban` | Banear a un usuario |
+  | `/kick` | Expulsar a un usuario |
+  | `/mute` | Silenciar temporalmente |
+  | `/unmute` | Quitar el silencio |
+  | `/warn` | Advertir a un usuario |
+  | `/unban` | Desbanear a un usuario |
+  | `/verificar` | Enviar panel de verificación |
+  | `/verificacion-config` | Configurar verificación |
+  | `/bienvenida-config` | Configurar bienvenida |
+  | `/ticket-config` | Configurar tickets |
+  | `/invites` | Ver ranking de invitaciones |
 
----
+  ---
 
-## Estructura del repo
+  ## Dashboard — Nexus Control
 
-```
-artifacts/
-  api-server/       # Bot de Discord + API REST
-    src/
-      bot/
-        commands/   # /ban, /kick, /mute, /warn, /clear, etc.
-        events/     # ready, guildMemberAdd, interactionCreate, etc.
-        panels.ts   # Paneles de verificación y tickets
-      routes/
-        auth.ts     # OAuth2 con Discord
-        guilds.ts   # Endpoints del dashboard
-  dashboard/        # Dashboard web (React + Vite)
-    src/
-      pages/
-        index.tsx            # Login
-        servers/index.tsx    # Lista de servidores
-        servers/[guildId]/   # Módulos por servidor
-      components/
-        layout/SidebarLayout.tsx
-lib/
-  db/       # Schema Drizzle + migraciones
-  api-spec/ # OpenAPI spec
-  api-zod/  # Schemas Zod generados
-```
+  Panel web con login via **Discord OAuth2** que permite configurar todos los módulos visualmente.
 
----
+  ### Páginas disponibles
 
-## Configuración
+  | Ruta | Descripción |
+  |---|---|
+  | `/` | Pantalla de login con Discord |
+  | `/servers` | Lista de servidores con el bot activo |
+  | `/servers/:id` | Panel general con estadísticas |
+  | `/servers/:id/verification` | Configurar verificación + vista previa del embed |
+  | `/servers/:id/welcome` | Configurar bienvenida + test de embed en vivo |
+  | `/servers/:id/tickets` | Configurar tickets + lista de tickets abiertos |
+  | `/servers/:id/moderation` | Configurar moderación + historial de acciones |
+  | `/servers/:id/invites` | Ranking de invitaciones + configurar anuncios |
 
-### Variables de entorno requeridas
+  ### Stack del dashboard
 
-```env
-DATABASE_URL=          # PostgreSQL connection string
-DISCORD_TOKEN=         # Token del bot (Discord Developer Portal)
-DISCORD_CLIENT_ID=     # Application ID
-DISCORD_CLIENT_SECRET= # OAuth2 Secret (para el dashboard)
-SESSION_SECRET=        # Secreto aleatorio para las sesiones
-```
+  - **React 19** + **Vite 7** + **Tailwind CSS v4**
+  - **TanStack Query** para data fetching
+  - **React Hook Form** + **Zod** para formularios
+  - **Wouter** para routing
+  - **shadcn/ui** (Radix UI) para componentes
 
-### Configurar el bot en Discord Developer Portal
+  ---
 
-1. Ir a [discord.com/developers/applications](https://discord.com/developers/applications)
-2. Crear o abrir tu aplicación
-3. **Bot** → copiar el token → guardarlo como `DISCORD_TOKEN`
-4. **General Information** → copiar Application ID → `DISCORD_CLIENT_ID`
-5. **OAuth2** → añadir redirect URI: `https://TU_DOMINIO/api/auth/callback`
-6. **Bot** → activar los Privileged Intents:
-   - `SERVER MEMBERS INTENT`
-   - `MESSAGE CONTENT INTENT`
-7. Invitar el bot con estos scopes: `bot`, `applications.commands`
-8. Permisos mínimos: `Administrator` (o los permisos específicos de cada comando)
+  ## Requisitos
 
----
+  - Node.js 20+
+  - pnpm
+  - PostgreSQL (o usar el de Replit)
+  - Aplicación de Discord con bot token y OAuth2
 
-## Desarrollo local
+  ### Variables de entorno necesarias
 
-```bash
-# Instalar dependencias
-pnpm install
+  ```env
+  DISCORD_TOKEN=           # Token del bot
+  DISCORD_CLIENT_ID=       # ID de la aplicación
+  DISCORD_CLIENT_SECRET=   # Secreto OAuth2
+  SESSION_SECRET=          # Secreto para sesiones Express
+  DATABASE_URL=            # URL de PostgreSQL
+  ```
 
-# Ejecutar el API server (bot + rutas)
-pnpm --filter @workspace/api-server run dev
+  ---
 
-# Ejecutar el dashboard
-pnpm --filter @workspace/dashboard run dev
+  ## Configurar OAuth2 en Discord
 
-# Aplicar schema a la base de datos
-pnpm --filter @workspace/db run push
+  1. Ve a [discord.com/developers/applications](https://discord.com/developers/applications)
+  2. Selecciona tu aplicación → **OAuth2** → **Redirects**
+  3. Añade: `https://<tu-dominio>/api/auth/callback`
+  4. Guarda los cambios
 
-# Typecheck completo
-pnpm run typecheck
-```
+  ---
 
----
+  ## Instalación y desarrollo
 
-## Comandos del bot
+  ```bash
+  pnpm install
+  pnpm --filter @workspace/db run push   # Crear tablas en la DB
+  pnpm --filter @workspace/api-server run dev   # API + Bot
+  pnpm --filter @workspace/dashboard run dev    # Dashboard
+  ```
 
-| Comando | Descripción | Permisos |
-|---|---|---|
-| `/ban` | Banear usuario + log | Ban Members |
-| `/kick` | Expulsar usuario + log | Kick Members |
-| `/mute` | Silenciar (timeout) con duración | Moderate Members |
-| `/unmute` | Quitar silencio | Moderate Members |
-| `/warn` | Advertir y notificar por DM | Moderate Members |
-| `/warnings` | Ver advertencias de un usuario | Moderate Members |
-| `/clear` | Eliminar mensajes en masa (1–100) | Manage Messages |
-| `/setup-verification` | Enviar panel de verificación | Administrator |
-| `/setup-tickets` | Enviar panel de tickets | Administrator |
-| `/invite-top` | Top de invitadores del servidor | Todos |
+  ---
 
----
+  ## Estructura del proyecto
 
-## Cómo funciona la verificación
+  ```
+  artifacts/
+    api-server/    # Express API + bot de Discord
+    dashboard/     # Dashboard React/Vite
+  lib/
+    db/            # Esquema Drizzle ORM + migraciones
+    api-spec/      # Especificación OpenAPI
+    api-client-react/  # Hooks generados (TanStack Query)
+    api-zod/           # Schemas Zod generados
+  ```
 
-1. El admin configura el canal y rol desde el dashboard
-2. El bot envía un panel con un botón "Verificar" al canal
-3. El usuario hace clic → recibe un código de 6 caracteres en una respuesta efímera
-4. El usuario escribe el código en el canal de verificación
-5. El bot asigna el rol y borra el mensaje automáticamente
+  ---
 
----
+  ## Bugs conocidos / fixes aplicados
 
-## Licencia
+  - ✅ **removeChild DOM bug**: parchado en `main.tsx` — el overlay de Vite HMR intentaba eliminar un nodo que no era hijo del padre, causando un error en pantalla.
 
-MIT
+  ---
+
+  ## Licencia
+
+  MIT
+  
