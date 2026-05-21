@@ -57,7 +57,7 @@ export async function onMessageCreate(message: Message): Promise<void> {
     await message.delete().catch(() => null);
 
     // Send confirmation (ephemeral-style: auto-delete after 5s)
-    const reply = await message.channel.send({
+    const reply = await (message.channel as import("discord.js").TextChannel).send({
       content: `✅ <@${userId}> ¡Has sido verificado exitosamente! Bienvenido al servidor.`,
     });
 

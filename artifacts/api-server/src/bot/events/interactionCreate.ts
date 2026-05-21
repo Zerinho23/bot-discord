@@ -216,7 +216,7 @@ export async function onInteractionCreate(interaction: Interaction): Promise<voi
           .setCustomId("close_ticket")
           .setLabel("🔒 Cerrar Ticket")
           .setStyle(ButtonStyle.Danger);
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(closeBtn);
+        const row = new ActionRowBuilder<typeof ButtonBuilder.prototype>().addComponents(closeBtn);
 
         await channel.send({ content: `<@${interaction.user.id}>`, embeds: [embed], components: [row] });
 

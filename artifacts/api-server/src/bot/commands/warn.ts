@@ -19,10 +19,8 @@ export const warnCommand = {
     await db.insert(moderationActionsTable).values({
       guildId,
       type: "warn",
-      targetId: target.id,
-      targetUsername: target.username,
+      userId: target.id,
       moderatorId: interaction.user.id,
-      moderatorUsername: interaction.user.username,
       reason,
     });
 
@@ -31,7 +29,7 @@ export const warnCommand = {
       .from(moderationActionsTable)
       .where(and(
         eq(moderationActionsTable.guildId, guildId),
-        eq(moderationActionsTable.targetId, target.id),
+        eq(moderationActionsTable.userId, target.id),
         eq(moderationActionsTable.type, "warn")
       ));
 

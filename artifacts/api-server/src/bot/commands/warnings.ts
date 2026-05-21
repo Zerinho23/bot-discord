@@ -19,7 +19,7 @@ export const warningsCommand = {
       .from(moderationActionsTable)
       .where(and(
         eq(moderationActionsTable.guildId, guildId),
-        eq(moderationActionsTable.targetId, target.id),
+        eq(moderationActionsTable.userId, target.id),
         eq(moderationActionsTable.type, "warn")
       ));
 
@@ -33,7 +33,7 @@ export const warningsCommand = {
       .setDescription(
         warns
           .slice(0, 10)
-          .map((w, i) => `**${i + 1}.** ${w.reason ?? "Sin razón"} — por ${w.moderatorUsername} — <t:${Math.floor(w.createdAt.getTime() / 1000)}:R>`)
+          .map((w, i) => `**${i + 1}.** ${w.reason ?? "Sin razón"} — <t:${Math.floor((w.createdAt ? new Date(w.createdAt).getTime() : Date.now()) / 1000)}:R>`)
           .join("\n")
       )
       .setFooter({ text: `Total: ${warns.length} advertencias` })

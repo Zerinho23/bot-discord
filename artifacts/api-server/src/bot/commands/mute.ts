@@ -35,12 +35,9 @@ export const muteCommand = {
     await db.insert(moderationActionsTable).values({
       guildId,
       type: "mute",
-      targetId: target.id,
-      targetUsername: target.username,
+      userId: target.id,
       moderatorId: interaction.user.id,
-      moderatorUsername: interaction.user.username,
       reason,
-      duration,
     });
 
     const embed = new EmbedBuilder()

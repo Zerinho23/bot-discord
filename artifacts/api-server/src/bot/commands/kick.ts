@@ -27,10 +27,8 @@ export const kickCommand = {
     await db.insert(moderationActionsTable).values({
       guildId,
       type: "kick",
-      targetId: target.id,
-      targetUsername: target.username,
+      userId: target.id,
       moderatorId: interaction.user.id,
-      moderatorUsername: interaction.user.username,
       reason,
     });
 

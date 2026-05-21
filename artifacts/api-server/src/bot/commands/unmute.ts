@@ -26,10 +26,8 @@ export const unmuteCommand = {
     await db.insert(moderationActionsTable).values({
       guildId,
       type: "unmute",
-      targetId: target.id,
-      targetUsername: target.username,
+      userId: target.id,
       moderatorId: interaction.user.id,
-      moderatorUsername: interaction.user.username,
       reason,
     });
 
