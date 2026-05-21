@@ -16,6 +16,22 @@ export async function onMessageCreate(message: Message): Promise<void> {
   if (!/^[A-Z0-9]{6}$/.test(content)) return;
 
   try {
+    // Check verification config first — code must be sent in the configured channel
+    const [config] = await db
+      .select()
+      .from(verificationConfigsTable)
+      .where(eq(verificationConfigsTable.guildId, guildId));
+
+    if (!config?.enabled || !config.channelId) return;
+
+    // Ignore if the message is not in the verification channel
+    if (message.channelId !== config.channelId) return;
+
+    if (!config.roleId) {
+      await message.reply({ content: "❌ No hay un rol de verificación configurado. Contacta a un administrador." });
+      return;
+    }
+
     const now = new Date();
     const [pending] = await db
       .select()
@@ -31,32 +47,21 @@ export async function onMessageCreate(message: Message): Promise<void> {
 
     if (!pending) return;
 
-    // Get the configured role
-    const [config] = await db
-      .select()
-      .from(verificationConfigsTable)
-      .where(eq(verificationConfigsTable.guildId, guildId));
-
-    if (!config?.roleId) {
-      await message.reply({ content: "❌ No hay un rol de verificación configurado. Contacta a un administrador." });
-      return;
-    }
-
     const member = await message.guild?.members.fetch(userId).catch(() => null);
     if (!member) return;
 
-    // Assign the member role
+    // Assign the verified role
     await member.roles.add(config.roleId);
 
-    // Delete the pending verification
+    // Delete the pending verification record
     await db
       .delete(pendingVerificationsTable)
       .where(eq(pendingVerificationsTable.id, pending.id));
 
-    // Delete the code message for security
+    // Delete the code message so the channel stays clean
     await message.delete().catch(() => null);
 
-    // Send confirmation (ephemeral-style: auto-delete after 5s)
+    // Send a brief success message that auto-deletes after 5 seconds
     const reply = await (message.channel as import("discord.js").TextChannel).send({
       content: `✅ <@${userId}> ¡Has sido verificado exitosamente! Bienvenido al servidor.`,
     });

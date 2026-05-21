@@ -11,11 +11,12 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { DiscordEmbedPreview } from "@/components/ui/DiscordEmbedPreview";
 import { ChannelSelect } from "@/components/ui/ChannelSelect";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Shield, Sparkles } from "lucide-react";
 
 const verificationSchema = z.object({
   enabled: z.boolean(),
@@ -43,7 +44,7 @@ export default function VerificationConfig() {
     mutation: {
       onSuccess: (data) => {
         queryClient.setQueryData(getGetVerificationConfigQueryKey(guildId!), data);
-        toast({ title: "Guardado", description: "Configuración de verificación actualizada." });
+        toast({ title: "✅ Guardado", description: "Configuración de verificación actualizada." });
       },
       onError: () => toast({ title: "Error", description: "No se pudo guardar.", variant: "destructive" }),
     }
@@ -51,7 +52,10 @@ export default function VerificationConfig() {
 
   const form = useForm<VerificationFormValues>({
     resolver: zodResolver(verificationSchema),
-    defaultValues: { enabled: false, channelId: "", roleId: "", embedTitle: "", embedDescription: "", embedColor: "#5865F2", buttonLabel: "", buttonEmoji: "" }
+    defaultValues: {
+      enabled: false, channelId: "", roleId: "", embedTitle: "",
+      embedDescription: "", embedColor: "#5865F2", buttonLabel: "", buttonEmoji: ""
+    }
   });
 
   useEffect(() => {
@@ -90,32 +94,46 @@ export default function VerificationConfig() {
   return (
     <SidebarLayout guildId={guildId}>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Verificación</h1>
-          <p className="text-muted-foreground mt-2">
-            El bot enviará un código por DM al usuario cuando presione el botón. El usuario debe escribir el código en el servidor para obtener el rol.
-          </p>
+        {/* Header */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center shrink-0">
+            <Shield className="w-5 h-5 text-green-400" />
+          </div>
+          <div>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight">Verificación</h1>
+            <p className="text-muted-foreground text-sm mt-0.5">
+              El bot envía un código en el canal de verificación — el usuario lo escribe ahí mismo para obtener el rol.
+            </p>
+          </div>
         </div>
 
-        {isLoading ? <Skeleton className="h-[600px] w-full" /> : (
+        {isLoading ? <Skeleton className="h-[550px] w-full" /> : (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              {/* Enable toggle */}
               <Card>
-                <CardHeader><CardTitle>Configuración general</CardTitle></CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="p-4">
                   <FormField control={form.control} name="enabled" render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                      <div className="space-y-0.5">
-                        <FormLabel className="text-base">Activar verificación</FormLabel>
-                        <CardDescription>Habilita o deshabilita el sistema de verificación.</CardDescription>
+                    <FormItem className="flex items-center justify-between gap-3 space-y-0">
+                      <div>
+                        <FormLabel className="font-medium">Activar verificación</FormLabel>
+                        <CardDescription className="text-xs mt-0.5">Habilita o deshabilita el sistema de verificación.</CardDescription>
                       </div>
                       <FormControl>
                         <Switch checked={field.value} onCheckedChange={field.onChange} />
                       </FormControl>
                     </FormItem>
                   )} />
+                </CardContent>
+              </Card>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Channel & Role */}
+              <Card>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base">Canal y rol</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField control={form.control} name="channelId" render={({ field }) => (
                       <FormItem>
                         <FormLabel>Canal de verificación</FormLabel>
@@ -130,13 +148,13 @@ export default function VerificationConfig() {
                         <FormMessage />
                       </FormItem>
                     )} />
-
                     <FormField control={form.control} name="roleId" render={({ field }) => (
                       <FormItem>
                         <FormLabel>ID del rol verificado</FormLabel>
                         <FormControl>
                           <Input placeholder="1434712129654493244" {...field} value={field.value || ''} />
                         </FormControl>
+                        <FormDescription className="text-xs">Se asigna al verificarse</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )} />
@@ -144,9 +162,12 @@ export default function VerificationConfig() {
                 </CardContent>
               </Card>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              {/* Embed config + preview */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <Card>
-                  <CardHeader><CardTitle>Configuración del embed</CardTitle></CardHeader>
+                  <CardHeader className="pb-3">
+                    <CardTitle className="text-base">Configuración del embed</CardTitle>
+                  </CardHeader>
                   <CardContent className="space-y-4">
                     <FormField control={form.control} name="embedTitle" render={({ field }) => (
                       <FormItem>
@@ -158,18 +179,33 @@ export default function VerificationConfig() {
                       <FormItem>
                         <FormLabel>Descripción</FormLabel>
                         <FormControl>
-                          <Textarea placeholder="Presiona el botón para verificarte y acceder al servidor." className="min-h-[100px]" {...field} value={field.value || ''} />
+                          <Textarea
+                            placeholder="Presiona el botón para verificarte y acceder al servidor."
+                            className="min-h-[80px] resize-none"
+                            {...field}
+                            value={field.value || ''}
+                          />
                         </FormControl>
                       </FormItem>
                     )} />
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 gap-3">
                       <FormField control={form.control} name="embedColor" render={({ field }) => (
                         <FormItem>
                           <FormLabel>Color</FormLabel>
                           <FormControl>
-                            <div className="flex gap-2">
-                              <Input type="color" className="w-12 p-1" {...field} value={field.value || '#5865F2'} />
-                              <Input placeholder="#5865F2" {...field} value={field.value || ''} />
+                            <div className="flex gap-2 items-center">
+                              <div
+                                className="w-9 h-9 rounded-lg border border-border shrink-0 relative overflow-hidden"
+                                style={{ background: field.value || '#5865F2' }}
+                              >
+                                <input
+                                  type="color"
+                                  className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+                                  value={field.value || '#5865F2'}
+                                  onChange={e => field.onChange(e.target.value)}
+                                />
+                              </div>
+                              <Input placeholder="#5865F2" {...field} value={field.value || ''} className="font-mono text-xs" />
                             </div>
                           </FormControl>
                         </FormItem>
@@ -184,8 +220,8 @@ export default function VerificationConfig() {
                   </CardContent>
                 </Card>
 
-                <div className="space-y-4 sticky top-6">
-                  <h3 className="font-medium text-sm text-muted-foreground">Vista previa</h3>
+                <div className="space-y-2">
+                  <p className="text-xs font-medium text-muted-foreground px-1">Vista previa</p>
                   <DiscordEmbedPreview
                     title={values.embedTitle || "Verificación"}
                     description={values.embedDescription || "Presiona el botón para verificarte."}
@@ -196,7 +232,8 @@ export default function VerificationConfig() {
               </div>
 
               <div className="flex justify-end">
-                <Button type="submit" disabled={updateConfig.isPending}>
+                <Button type="submit" disabled={updateConfig.isPending} className="gap-2">
+                  <Sparkles className="w-4 h-4" />
                   {updateConfig.isPending ? "Guardando..." : "Guardar cambios"}
                 </Button>
               </div>

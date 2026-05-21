@@ -5,10 +5,15 @@ import { botClient } from "../bot";
 const router: IRouter = Router();
 
 function getRedirectUri(req: Request): string {
-  const domain = process.env.REPLIT_DOMAINS?.split(",")[0];
-  if (domain) return `https://${domain}/api/auth/callback`;
-  return `https://${req.get("host")}/api/auth/callback`;
+  const forwardedHost = req.get("x-forwarded-host");
+  const host = forwardedHost || req.get("host") || "";
+  const proto = req.get("x-forwarded-proto") || "https";
+  return `${proto}://${host}/api/auth/callback`;
 }
+
+router.get("/auth/debug-redirect", (req, res): void => {
+  res.json({ redirectUri: getRedirectUri(req) });
+});
 
 router.get("/auth/discord", async (req, res): Promise<void> => {
   const clientId = process.env.DISCORD_CLIENT_ID;

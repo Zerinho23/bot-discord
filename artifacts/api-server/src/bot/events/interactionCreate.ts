@@ -99,33 +99,19 @@ export async function onInteractionCreate(interaction: Interaction): Promise<voi
           expiresAt,
         });
 
-        // Send DM with code
-        try {
-          const dmEmbed = new EmbedBuilder()
-            .setTitle("🔐 Código de Verificación")
-            .setDescription(
-              `Tu código de verificación para **${interaction.guild?.name}** es:\n\n` +
-              `## \`${code}\`\n\n` +
-              `Escribe este código en cualquier canal del servidor para verificarte.\n` +
-              `⏳ El código expira en **10 minutos**.\n\n` +
-              `*Si no solicitaste esto, ignora este mensaje.*`
-            )
-            .setColor(0x5865f2)
-            .setTimestamp();
+        // Send code as ephemeral reply in the verification channel (only visible to the user)
+        const codeEmbed = new EmbedBuilder()
+          .setTitle("🔐 Tu código de verificación")
+          .setDescription(
+            `## \`${code}\`\n\n` +
+            `Escribe este código **en este canal** para verificarte y acceder al servidor.\n` +
+            `⏳ El código expira en **10 minutos**.\n\n` +
+            `*Solo tú puedes ver este mensaje.*`
+          )
+          .setColor(0x5865f2)
+          .setTimestamp();
 
-          await interaction.user.send({ embeds: [dmEmbed] });
-          await interaction.reply({
-            content: "📬 Te enviamos un código de verificación por DM. Escríbelo en cualquier canal del servidor.",
-            ephemeral: true,
-          });
-        } catch {
-          // DMs disabled — delete pending and inform
-          await db.delete(pendingVerificationsTable).where(eq(pendingVerificationsTable.id, id));
-          await interaction.reply({
-            content: "❌ No pude enviarte un DM. Asegúrate de tener los mensajes directos habilitados para este servidor.",
-            ephemeral: true,
-          });
-        }
+        await interaction.reply({ embeds: [codeEmbed], ephemeral: true });
       } catch (err) {
         logger.error({ err }, "Error in verification button");
         await interaction.reply({ content: "Error al iniciar verificación. Contacta a un administrador.", ephemeral: true });

@@ -29,6 +29,8 @@ async function buildAll() {
     // - use path traversal to read files (e.g. @google-cloud/secret-manager loads sibling .proto files)
     external: [
       "*.node",
+      "discord.js",
+      "express-session",
       "sharp",
       "better-sqlite3",
       "sqlite3",
@@ -96,8 +98,6 @@ async function buildAll() {
       "wrangler",
       "zeromq",
       "zeromq-prebuilt",
-      "discord.js",
-      "@discordjs/*",
       "playwright",
       "puppeteer",
       "puppeteer-core",

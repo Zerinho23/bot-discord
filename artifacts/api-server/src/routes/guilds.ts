@@ -140,7 +140,6 @@ router.patch("/guilds/:guildId/verification", async (req, res): Promise<void> =>
     .onConflictDoUpdate({ target: verificationConfigsTable.guildId, set: body.data })
     .returning();
   res.json(updated);
-  // Send/update panel in Discord immediately
   sendVerificationPanel(params.data.guildId).catch(() => null);
 });
 
@@ -219,7 +218,6 @@ router.patch("/guilds/:guildId/tickets/config", async (req, res): Promise<void> 
     .onConflictDoUpdate({ target: ticketConfigsTable.guildId, set: body.data })
     .returning();
   res.json(updated);
-  // Send/update panel in Discord immediately
   sendTicketPanel(params.data.guildId).catch(() => null);
 });
 
