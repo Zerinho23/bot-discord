@@ -69,21 +69,20 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  /* Deep space grey/indigo - authoritative cockpit vibe */
-  --background: 230 15% 8%; 
+  --background: 230 18% 7%;
   --foreground: 220 20% 98%;
 
-  --border: 230 15% 15%;
-  --input: 230 15% 15%;
+  --border: 230 15% 14%;
+  --input: 230 15% 14%;
   --ring: 235 86% 65%;
 
-  --card: 230 15% 10%;
+  --card: 230 16% 9%;
   --card-foreground: 220 20% 98%;
-  --card-border: 230 15% 15%;
+  --card-border: 230 15% 14%;
 
-  --popover: 230 15% 10%;
+  --popover: 230 16% 10%;
   --popover-foreground: 220 20% 98%;
-  --popover-border: 230 15% 15%;
+  --popover-border: 230 15% 14%;
 
   --primary: 235 86% 65%;
   --primary-foreground: 0 0% 100%;
@@ -91,8 +90,8 @@
   --secondary: 230 15% 18%;
   --secondary-foreground: 220 20% 98%;
 
-  --muted: 230 15% 14%;
-  --muted-foreground: 220 10% 65%;
+  --muted: 230 15% 13%;
+  --muted-foreground: 220 10% 58%;
 
   --accent: 230 15% 18%;
   --accent-foreground: 220 20% 98%;
@@ -100,12 +99,12 @@
   --destructive: 350 89% 60%;
   --destructive-foreground: 0 0% 100%;
 
-  --sidebar: 230 15% 6%;
+  --sidebar: 230 18% 5%;
   --sidebar-foreground: 220 20% 98%;
-  --sidebar-border: 230 15% 12%;
+  --sidebar-border: 230 15% 11%;
   --sidebar-primary: 235 86% 65%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 230 15% 14%;
+  --sidebar-accent: 230 15% 12%;
   --sidebar-accent-foreground: 220 20% 98%;
   --sidebar-ring: 235 86% 65%;
 
@@ -118,16 +117,15 @@
   --app-font-sans: 'Inter', sans-serif;
   --app-font-serif: Georgia, serif;
   --app-font-mono: 'Space Mono', monospace;
-  --radius: 0.5rem;
+  --radius: 0.625rem;
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5), 0 1px 2px -1px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
 }
 
 .dark {
-  /* We enforce dark mode universally for this app */
 }
 
 @layer base {
@@ -138,4 +136,73 @@
   body {
     @apply font-sans antialiased bg-background text-foreground;
   }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(230 15% 20%);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(230 15% 28%);
+  }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(88, 101, 242, 0); }
+  50%       { box-shadow: 0 0 20px 4px rgba(88, 101, 242, 0.25); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.45s ease both;
+}
+
+.animate-fade-in-up-delay-1 { animation: fade-in-up 0.45s 0.08s ease both; }
+.animate-fade-in-up-delay-2 { animation: fade-in-up 0.45s 0.16s ease both; }
+.animate-fade-in-up-delay-3 { animation: fade-in-up 0.45s 0.24s ease both; }
+.animate-fade-in-up-delay-4 { animation: fade-in-up 0.45s 0.32s ease both; }
+
+.shimmer-text {
+  background: linear-gradient(
+    90deg,
+    hsl(220 20% 98%) 0%,
+    hsl(235 86% 80%) 45%,
+    hsl(280 80% 80%) 55%,
+    hsl(220 20% 98%) 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 4s linear infinite;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.dot-grid {
+  background-image: radial-gradient(circle, rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.glow-primary {
+  animation: pulse-glow 3s ease-in-out infinite;
 }
