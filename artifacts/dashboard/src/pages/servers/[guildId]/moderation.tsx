@@ -185,13 +185,13 @@ export default function ModerationConfig() {
                             'bg-primary/20 text-primary'
                           }`}>{action.type}</span>
                         </TableCell>
-                        <TableCell className="font-medium">{action.targetUsername}</TableCell>
-                        <TableCell className="text-muted-foreground">{action.moderatorUsername}</TableCell>
+                        <TableCell className="font-medium">{action.userId}</TableCell>
+                        <TableCell className="text-muted-foreground">{action.moderatorId}</TableCell>
                         <TableCell className="max-w-[200px] truncate" title={action.reason || ''}>
                           {action.reason || <span className="text-muted-foreground italic">Sin razón</span>}
                         </TableCell>
                         <TableCell className="text-right text-muted-foreground whitespace-nowrap">
-                          {format(new Date(action.createdAt), 'dd/MM/yyyy HH:mm')}
+                          {action.createdAt ? format(new Date(action.createdAt as string), 'dd/MM/yyyy HH:mm') : '—'}
                         </TableCell>
                       </TableRow>
                     ))}

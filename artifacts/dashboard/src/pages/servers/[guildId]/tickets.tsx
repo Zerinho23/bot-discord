@@ -234,15 +234,15 @@ export default function TicketConfig() {
                     <div key={ticket.id} className="p-4 flex items-center justify-between hover:bg-muted/30 transition-colors">
                       <div className="flex flex-col gap-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-medium">{ticket.subject || `Ticket de ${ticket.username}`}</span>
+                          <span className="font-medium">{`Ticket #${ticket.id}`}</span>
                           <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full uppercase ${ticket.status === 'open' ? 'bg-green-500/20 text-green-500' : 'bg-muted text-muted-foreground'}`}>
                             {ticket.status === 'open' ? 'Abierto' : 'Cerrado'}
                           </span>
                         </div>
-                        <span className="text-sm text-muted-foreground">Abierto por {ticket.username}</span>
+                        <span className="text-sm text-muted-foreground">Abierto por {ticket.userId}</span>
                       </div>
                       <div className="text-sm text-muted-foreground">
-                        {format(new Date(ticket.createdAt), 'dd/MM/yyyy HH:mm')}
+                        {ticket.createdAt ? format(new Date(ticket.createdAt as string), 'dd/MM/yyyy HH:mm') : '—'}
                       </div>
                     </div>
                   ))}

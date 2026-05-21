@@ -153,25 +153,25 @@ export default function InviteConfig() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {stats.sort((a, b) => b.totalInvites - a.totalInvites).map((stat, idx) => (
+                    {stats.sort((a, b) => (b.regularInvites - b.leftInvites - b.fakeInvites) - (a.regularInvites - a.leftInvites - a.fakeInvites)).map((stat, idx) => (
                       <TableRow key={stat.userId}>
                         <TableCell className="font-medium text-muted-foreground">#{idx + 1}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {stat.avatar ? (
-                              <img src={`https://cdn.discordapp.com/avatars/${stat.userId}/${stat.avatar}.webp?size=32`} alt={stat.username} className="w-8 h-8 rounded-full border border-border" />
+                              <img src={`https://cdn.discordapp.com/avatars/${stat.userId}/${stat.avatar}.webp?size=32`} alt={stat.username ?? stat.userId} className="w-8 h-8 rounded-full border border-border" />
                             ) : (
                               <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center font-bold text-xs uppercase border border-border">
-                                {stat.username.slice(0, 2)}
+                                {(stat.username ?? stat.userId).slice(0, 2)}
                               </div>
                             )}
-                            <span className="font-medium">{stat.username}</span>
+                            <span className="font-medium">{stat.username ?? stat.userId}</span>
                           </div>
                         </TableCell>
                         <TableCell className="text-right text-green-500">{stat.regularInvites}</TableCell>
                         <TableCell className="text-right text-destructive">{stat.fakeInvites}</TableCell>
                         <TableCell className="text-right text-muted-foreground">{stat.leftInvites}</TableCell>
-                        <TableCell className="text-right font-bold text-primary text-lg">{stat.totalInvites}</TableCell>
+                        <TableCell className="text-right font-bold text-primary text-lg">{stat.regularInvites - stat.leftInvites - stat.fakeInvites}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

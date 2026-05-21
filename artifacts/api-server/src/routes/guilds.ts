@@ -165,6 +165,41 @@ router.patch("/guilds/:guildId/welcome", async (req, res): Promise<void> => {
   res.json(updated);
 });
 
+// POST /guilds/:guildId/welcome/test
+router.post("/guilds/:guildId/welcome/test", async (req, res): Promise<void> => {
+  const { guildId } = req.params;
+  if (!botClient) { res.status(400).json({ ok: false, message: "Bot no conectado" }); return; }
+
+  const [config] = await db.select().from(welcomeConfigsTable).where(eq(welcomeConfigsTable.guildId, guildId));
+  if (!config?.channelId) {
+    res.status(400).json({ ok: false, message: "No hay canal de bienvenida configurado" });
+    return;
+  }
+
+  try {
+    const guild = botClient.guilds.cache.get(guildId);
+    const channel = guild?.channels.cache.get(config.channelId) as import("discord.js").TextChannel | undefined;
+    if (!channel) { res.status(400).json({ ok: false, message: "Canal no encontrado" }); return; }
+
+    const { EmbedBuilder } = await import("discord.js");
+    const embed = new EmbedBuilder()
+      .setColor(parseInt((config.embedColor ?? "#5865F2").replace("#", ""), 16) as any);
+
+    if (config.embedAuthorName) embed.setAuthor({ name: config.embedAuthorName });
+    if (config.embedTitle) embed.setTitle(config.embedTitle.replace("{user}", "TestUser").replace("{server}", guild?.name ?? "Servidor").replace("{memberCount}", String(guild?.memberCount ?? 0)));
+    if (config.embedDescription) embed.setDescription(config.embedDescription.replace("{user}", "@TestUser").replace("{username}", "TestUser").replace("{server}", guild?.name ?? "Servidor").replace("{memberCount}", String(guild?.memberCount ?? 0)));
+    if (config.embedFooter) embed.setFooter({ text: config.embedFooter });
+    if (config.embedImage) embed.setImage(config.embedImage);
+    if (config.embedThumbnail) embed.setThumbnail(config.embedThumbnail);
+
+    await channel.send({ embeds: [embed] });
+    res.json({ ok: true, message: "Embed de prueba enviado correctamente" });
+  } catch (err) {
+    req.log.error({ err }, "Error sending test welcome embed");
+    res.status(500).json({ ok: false, message: "Error al enviar el embed" });
+  }
+});
+
 // --- TICKETS CONFIG ---
 router.get("/guilds/:guildId/tickets/config", async (req, res): Promise<void> => {
   const params = GetTicketConfigParams.safeParse(req.params);
