@@ -3,7 +3,7 @@ import { logger } from "../../lib/logger";
 import { db } from "@workspace/db";
 import { inviteCodesTable } from "@workspace/db";
 
-export async function onReady(client: Client): Promise<void> {
+export async function onReady(client: Client<true>): Promise<void> {
   logger.info({ tag: client.user?.tag }, "Bot is ready");
 
   for (const guild of client.guilds.cache.values()) {
