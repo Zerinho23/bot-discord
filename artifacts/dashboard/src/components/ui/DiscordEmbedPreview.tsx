@@ -11,6 +11,7 @@ interface EmbedPreviewProps {
   botName?: string;
   botAvatar?: string;
   buttonLabel?: string;
+  buttonEmoji?: string;
 }
 
 export function DiscordEmbedPreview({
@@ -24,14 +25,20 @@ export function DiscordEmbedPreview({
   botName = "InfernBOT",
   botAvatar,
   buttonLabel,
+  buttonEmoji,
 }: EmbedPreviewProps) {
-  const embedColor = color?.startsWith("#") ? color : color ? `#${parseInt(color).toString(16).padStart(6, "0")}` : "#5865F2";
+  const embedColor = color?.startsWith("#")
+    ? color
+    : color
+    ? `#${parseInt(color).toString(16).padStart(6, "0")}`
+    : "#5865F2";
+
   const hasContent = authorName || title || description || image || thumbnail || footer;
   const now = new Date();
   const timeStr = now.toLocaleTimeString("es", { hour: "2-digit", minute: "2-digit" });
 
   return (
-    <div className="bg-[#313338] rounded-lg p-4 w-full font-['Whitney','Helvetica Neue',Helvetica,Arial,sans-serif] select-none">
+    <div className="bg-[#313338] rounded-xl p-4 w-full font-['Whitney','Helvetica_Neue',Helvetica,Arial,sans-serif] select-none shadow-xl">
       {/* Message row */}
       <div className="flex gap-3">
         {/* Avatar */}
@@ -39,7 +46,7 @@ export function DiscordEmbedPreview({
           {botAvatar ? (
             <img src={botAvatar} alt={botName} className="w-10 h-10 rounded-full" />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-xs font-bold">
+            <div className="w-10 h-10 rounded-full bg-[#5865F2] flex items-center justify-center text-white text-xs font-bold shadow-md">
               {botName.slice(0, 2).toUpperCase()}
             </div>
           )}
@@ -48,37 +55,41 @@ export function DiscordEmbedPreview({
         {/* Content */}
         <div className="flex-1 min-w-0">
           {/* Username + badge + time */}
-          <div className="flex items-baseline gap-1.5 flex-wrap">
+          <div className="flex items-baseline gap-1.5 flex-wrap mb-1">
             <span className="text-white font-semibold text-[15px] leading-none">{botName}</span>
-            <span className="bg-[#5865F2] text-white text-[10px] font-semibold px-1 py-px rounded-sm leading-none uppercase tracking-wide">BOT</span>
+            <span className="bg-[#5865F2] text-white text-[10px] font-semibold px-1.5 py-px rounded-sm leading-none uppercase tracking-wide">
+              BOT
+            </span>
             <span className="text-[#949ba4] text-xs leading-none ml-1">Hoy a las {timeStr}</span>
           </div>
 
           {/* Embed */}
           {hasContent ? (
             <div
-              className="mt-2 rounded-[4px] overflow-hidden max-w-[432px]"
+              className="mt-1 rounded-[4px] overflow-hidden"
               style={{ background: "#2b2d31", borderLeft: `4px solid ${embedColor}` }}
             >
               <div className="p-3 pr-4">
                 <div className="flex gap-4">
-                  <div className="flex-1 min-w-0 space-y-1.5">
+                  <div className="flex-1 min-w-0 space-y-2">
                     {/* Author */}
                     {authorName && (
                       <div className="flex items-center gap-1.5">
                         <div className="w-4 h-4 rounded-full bg-[#5865F2] shrink-0" />
-                        <span className="text-white text-xs font-medium leading-none truncate">{authorName}</span>
+                        <span className="text-white text-xs font-semibold leading-none truncate">
+                          {authorName}
+                        </span>
                       </div>
                     )}
 
                     {/* Title */}
                     {title && (
-                      <div className="text-white font-semibold text-[15px] leading-snug">{title}</div>
+                      <div className="text-white font-bold text-[15px] leading-snug">{title}</div>
                     )}
 
                     {/* Description */}
                     {description && (
-                      <div className="text-[#dbdee1] text-sm leading-[1.375] whitespace-pre-wrap break-words opacity-90">
+                      <div className="text-[#dbdee1] text-sm leading-[1.4] whitespace-pre-wrap break-words">
                         {description}
                       </div>
                     )}
@@ -89,7 +100,7 @@ export function DiscordEmbedPreview({
                         <img
                           src={image}
                           alt="embed"
-                          className="max-w-full h-auto max-h-[300px] object-cover rounded"
+                          className="max-w-full h-auto max-h-[260px] object-cover rounded"
                           onError={(e) => (e.currentTarget.style.display = "none")}
                         />
                       </div>
@@ -97,9 +108,11 @@ export function DiscordEmbedPreview({
 
                     {/* Footer */}
                     {footer && (
-                      <div className="flex items-center gap-1.5 mt-1 pt-1 border-t border-white/5">
-                        <div className="w-4 h-4 rounded-full bg-[#1e1f22] shrink-0" />
-                        <span className="text-[#949ba4] text-[12px] leading-none truncate">{footer}</span>
+                      <div className="flex items-center gap-1.5 pt-2 mt-1 border-t border-white/[0.06]">
+                        <div className="w-3.5 h-3.5 rounded-full bg-[#5865F2]/40 shrink-0" />
+                        <span className="text-[#949ba4] text-[11px] leading-none truncate">
+                          {footer}
+                        </span>
                       </div>
                     )}
                   </div>
@@ -119,8 +132,21 @@ export function DiscordEmbedPreview({
               </div>
             </div>
           ) : (
-            <div className="mt-2 bg-[#2b2d31] border-l-4 border-[#5865F2] rounded-[4px] p-3 max-w-[432px]">
+            <div className="mt-1 bg-[#2b2d31] border-l-4 border-[#5865F2]/40 rounded-[4px] p-3">
               <span className="text-[#949ba4] text-sm italic">El embed aparecerá aquí...</span>
+            </div>
+          )}
+
+          {/* Discord-style button */}
+          {buttonLabel && (
+            <div className="mt-2">
+              <button
+                type="button"
+                className="inline-flex items-center gap-1.5 px-4 py-[6px] rounded bg-[#5865F2] text-white text-sm font-medium cursor-default select-none transition-colors hover:bg-[#4752C4] active:bg-[#3c45a5]"
+              >
+                {buttonEmoji && <span className="text-base leading-none">{buttonEmoji}</span>}
+                {buttonLabel}
+              </button>
             </div>
           )}
         </div>
