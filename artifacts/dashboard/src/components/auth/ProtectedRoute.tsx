@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 
 export function ProtectedRoute({ component: Component }: ProtectedRouteProps) {
   const { data: user, isLoading, isError } = useGetMe({
-    query: { retry: false, staleTime: 30_000 },
+    query: { queryKey: ["auth", "me"], retry: false, staleTime: 30_000 },
   });
 
   if (isLoading) {
