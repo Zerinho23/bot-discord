@@ -1,0 +1,955 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: auth
+    description: Authentication operations
+  - name: guilds
+    description: Discord guild operations
+
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /auth/me:
+    get:
+      operationId: getMe
+      tags: [auth]
+      summary: Get current user
+      description: Returns the authenticated Discord user and their guilds
+      responses:
+        "200":
+          description: Authenticated user info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Me"
+        "401":
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /guilds:
+    get:
+      operationId: listGuilds
+      tags: [guilds]
+      summary: List bot guilds
+      description: Returns all guilds the bot is in
+      responses:
+        "200":
+          description: List of guilds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Guild"
+
+  /guilds/{guildId}:
+    get:
+      operationId: getGuild
+      tags: [guilds]
+      summary: Get guild info
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guild info
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Guild"
+        "404":
+          description: Guild not found
+
+  /guilds/{guildId}/channels:
+    get:
+      operationId: listGuildChannels
+      tags: [guilds]
+      summary: List guild text channels
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of text channels
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Channel"
+
+  /guilds/{guildId}/emojis:
+    get:
+      operationId: listGuildEmojis
+      tags: [guilds]
+      summary: List guild custom emojis
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of custom emojis
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GuildEmoji"
+
+  /guilds/{guildId}/stats:
+    get:
+      operationId: getGuildStats
+      tags: [guilds]
+      summary: Get guild statistics
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Guild statistics
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GuildStats"
+
+  /guilds/{guildId}/verification:
+    get:
+      operationId: getVerificationConfig
+      tags: [guilds]
+      summary: Get verification configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Verification configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationConfig"
+    patch:
+      operationId: updateVerificationConfig
+      tags: [guilds]
+      summary: Update verification configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateVerificationConfigBody"
+      responses:
+        "200":
+          description: Updated verification configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerificationConfig"
+
+  /guilds/{guildId}/welcome:
+    get:
+      operationId: getWelcomeConfig
+      tags: [guilds]
+      summary: Get welcome configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Welcome configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WelcomeConfig"
+    patch:
+      operationId: updateWelcomeConfig
+      tags: [guilds]
+      summary: Update welcome configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWelcomeConfigBody"
+      responses:
+        "200":
+          description: Updated welcome configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WelcomeConfig"
+
+  /guilds/{guildId}/welcome/test:
+    post:
+      operationId: testWelcomeEmbed
+      tags: [guilds]
+      summary: Send a test welcome embed
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Test result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ActionResult"
+
+  /guilds/{guildId}/tickets/config:
+    get:
+      operationId: getTicketConfig
+      tags: [guilds]
+      summary: Get ticket configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ticket configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketConfig"
+    patch:
+      operationId: updateTicketConfig
+      tags: [guilds]
+      summary: Update ticket configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTicketConfigBody"
+      responses:
+        "200":
+          description: Updated ticket configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/TicketConfig"
+
+  /guilds/{guildId}/tickets:
+    get:
+      operationId: listTickets
+      tags: [guilds]
+      summary: List tickets for a guild
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of tickets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Ticket"
+
+  /guilds/{guildId}/moderation/config:
+    get:
+      operationId: getModerationConfig
+      tags: [guilds]
+      summary: Get moderation configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Moderation configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModerationConfig"
+    patch:
+      operationId: updateModerationConfig
+      tags: [guilds]
+      summary: Update moderation configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateModerationConfigBody"
+      responses:
+        "200":
+          description: Updated moderation configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ModerationConfig"
+
+  /guilds/{guildId}/moderation/actions:
+    get:
+      operationId: listModerationActions
+      tags: [guilds]
+      summary: List moderation actions
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of moderation actions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ModerationAction"
+
+  /guilds/{guildId}/invites:
+    get:
+      operationId: listInviteStats
+      tags: [guilds]
+      summary: List invite statistics
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of invite statistics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/InviteStat"
+
+  /guilds/{guildId}/invites/config:
+    get:
+      operationId: getInviteConfig
+      tags: [guilds]
+      summary: Get invite configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Invite configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InviteConfig"
+    patch:
+      operationId: updateInviteConfig
+      tags: [guilds]
+      summary: Update invite configuration
+      parameters:
+        - in: path
+          name: guildId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateInviteConfigBody"
+      responses:
+        "200":
+          description: Updated invite configuration
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InviteConfig"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+      required:
+        - error
+
+    ActionResult:
+      type: object
+      properties:
+        ok:
+          type: boolean
+        message:
+          type: string
+      required:
+        - ok
+        - message
+
+    Me:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        guilds:
+          type: array
+          items:
+            $ref: "#/components/schemas/Guild"
+      required:
+        - id
+        - username
+        - guilds
+
+    Guild:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        icon:
+          type: string
+          nullable: true
+        memberCount:
+          type: integer
+        botPresent:
+          type: boolean
+      required:
+        - id
+        - name
+        - memberCount
+        - botPresent
+
+    Channel:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: integer
+      required:
+        - id
+        - name
+        - type
+
+    GuildEmoji:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        animated:
+          type: boolean
+        url:
+          type: string
+      required:
+        - id
+        - name
+        - animated
+        - url
+
+    GuildStats:
+      type: object
+      properties:
+        totalMembers:
+          type: integer
+        totalWarnings:
+          type: integer
+        totalBans:
+          type: integer
+        totalTickets:
+          type: integer
+        openTickets:
+          type: integer
+        totalInvites:
+          type: integer
+        recentActions:
+          type: array
+          items:
+            $ref: "#/components/schemas/ModerationAction"
+      required:
+        - totalMembers
+        - totalWarnings
+        - totalBans
+        - totalTickets
+        - openTickets
+        - totalInvites
+        - recentActions
+
+    VerificationConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        enabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        roleId:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        buttonLabel:
+          type: string
+          nullable: true
+        buttonEmoji:
+          type: string
+          nullable: true
+        panelMessageId:
+          type: string
+          nullable: true
+      required:
+        - guildId
+        - enabled
+
+    UpdateVerificationConfigBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        roleId:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        buttonLabel:
+          type: string
+          nullable: true
+        buttonEmoji:
+          type: string
+          nullable: true
+
+    WelcomeConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        enabled:
+          type: boolean
+        dmEnabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        embedAuthorName:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        embedFooter:
+          type: string
+          nullable: true
+        embedImage:
+          type: string
+          nullable: true
+        embedThumbnail:
+          type: string
+          nullable: true
+        dmMessage:
+          type: string
+          nullable: true
+        autoRoleId:
+          type: string
+          nullable: true
+      required:
+        - guildId
+        - enabled
+        - dmEnabled
+
+    UpdateWelcomeConfigBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        dmEnabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        embedAuthorName:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        embedFooter:
+          type: string
+          nullable: true
+        embedImage:
+          type: string
+          nullable: true
+        embedThumbnail:
+          type: string
+          nullable: true
+        dmMessage:
+          type: string
+          nullable: true
+        autoRoleId:
+          type: string
+          nullable: true
+
+    TicketConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        enabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          nullable: true
+        staffRoleId:
+          type: string
+          nullable: true
+        supportRoleId:
+          type: string
+          nullable: true
+        logChannelId:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        buttonLabel:
+          type: string
+          nullable: true
+        buttonEmoji:
+          type: string
+          nullable: true
+        panelMessageId:
+          type: string
+          nullable: true
+      required:
+        - guildId
+        - enabled
+
+    UpdateTicketConfigBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        channelId:
+          type: string
+          nullable: true
+        categoryId:
+          type: string
+          nullable: true
+        staffRoleId:
+          type: string
+          nullable: true
+        supportRoleId:
+          type: string
+          nullable: true
+        logChannelId:
+          type: string
+          nullable: true
+        embedTitle:
+          type: string
+          nullable: true
+        embedDescription:
+          type: string
+          nullable: true
+        embedColor:
+          type: string
+          nullable: true
+        buttonLabel:
+          type: string
+          nullable: true
+        buttonEmoji:
+          type: string
+          nullable: true
+        panelMessageId:
+          type: string
+          nullable: true
+
+    Ticket:
+      type: object
+      properties:
+        id:
+          type: integer
+        guildId:
+          type: string
+        channelId:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        status:
+          type: string
+          enum: [open, closed]
+        createdAt:
+          type: string
+          format: date-time
+        closedAt:
+          type: string
+          format: date-time
+          nullable: true
+      required:
+        - id
+        - guildId
+        - channelId
+        - userId
+        - username
+        - status
+        - createdAt
+
+    ModerationConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        enabled:
+          type: boolean
+        autoModEnabled:
+          type: boolean
+        maxWarnings:
+          type: integer
+        logChannelId:
+          type: string
+          nullable: true
+        muteRoleId:
+          type: string
+          nullable: true
+      required:
+        - guildId
+        - enabled
+        - autoModEnabled
+        - maxWarnings
+
+    UpdateModerationConfigBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        autoModEnabled:
+          type: boolean
+        maxWarnings:
+          type: integer
+        logChannelId:
+          type: string
+          nullable: true
+        muteRoleId:
+          type: string
+          nullable: true
+
+    ModerationAction:
+      type: object
+      properties:
+        id:
+          type: integer
+        guildId:
+          type: string
+        userId:
+          type: string
+        moderatorId:
+          type: string
+        type:
+          type: string
+          enum: [warn, ban, kick, mute, unmute]
+        reason:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - guildId
+        - userId
+        - moderatorId
+        - type
+        - createdAt
+
+    InviteStat:
+      type: object
+      properties:
+        id:
+          type: integer
+        guildId:
+          type: string
+        userId:
+          type: string
+        username:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        regularInvites:
+          type: integer
+        leftInvites:
+          type: integer
+        fakeInvites:
+          type: integer
+        bonusInvites:
+          type: integer
+      required:
+        - id
+        - guildId
+        - userId
+        - username
+        - regularInvites
+        - leftInvites
+        - fakeInvites
+        - bonusInvites
+
+    InviteConfig:
+      type: object
+      properties:
+        guildId:
+          type: string
+        enabled:
+          type: boolean
+        announceChannelId:
+          type: string
+          nullable: true
+        announceMessage:
+          type: string
+          nullable: true
+      required:
+        - guildId
+        - enabled
+
+    UpdateInviteConfigBody:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        announceChannelId:
+          type: string
+          nullable: true
+        announceMessage:
+          type: string
+          nullable: true
