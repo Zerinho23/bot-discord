@@ -323,4 +323,19 @@ router.patch("/guilds/:guildId/invites/config", async (req, res): Promise<void> 
   res.json(updated);
 });
 
-export default router;
+  // GET /guilds/:guildId/emojis — returns all custom emojis cached by the bot
+  router.get("/guilds/:guildId/emojis", (req, res): void => {
+    const { guildId } = req.params;
+    if (!botClient) { res.json([]); return; }
+    const guild = botClient.guilds.cache.get(guildId);
+    if (!guild) { res.json([]); return; }
+    const emojis = guild.emojis.cache.map((e) => ({
+      id: e.id,
+      name: e.name ?? "",
+      animated: e.animated ?? false,
+      url: e.imageURL() ?? "",
+    }));
+    res.json(emojis);
+  });
+
+  export default router;
