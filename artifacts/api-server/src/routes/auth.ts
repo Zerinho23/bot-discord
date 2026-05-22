@@ -61,7 +61,14 @@ router.get("/auth/callback", async (req, res): Promise<void> => {
     (req.session as any).discordUser = userData;
     (req.session as any).accessToken = tokenData.access_token;
 
-    res.redirect("/servers");
+    req.session.save((err) => {
+      if (err) {
+        logger.error({ err }, "Failed to save session");
+        res.redirect("/?error=session_failed");
+        return;
+      }
+      res.redirect("/servers");
+    });
   } catch (err) {
     logger.error({ err }, "OAuth callback error");
     res.redirect("/?error=auth_failed");
