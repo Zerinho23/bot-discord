@@ -60,9 +60,16 @@ export default function TicketConfig() {
   const form = useForm<TicketFormValues>({
     resolver: zodResolver(ticketSchema),
     defaultValues: {
-      enabled: false, channelId: "", categoryId: "", supportRoleId: "",
-      logChannelId: "", embedTitle: "", embedDescription: "", embedColor: "#5865F2",
-      buttonLabel: "", buttonEmoji: ""
+      enabled: false,
+      channelId: "",
+      categoryId: "",
+      supportRoleId: "",
+      logChannelId: "",
+      embedTitle: "🎫 Sistema de Tickets",
+      embedDescription: "¿Tienes alguna duda, problema o sugerencia?\n\nAbre un ticket y nuestro equipo de soporte te atenderá lo antes posible.",
+      embedColor: "#FEE75C",
+      buttonLabel: "Abrir Ticket",
+      buttonEmoji: "🎫",
     }
   });
 
@@ -246,10 +253,11 @@ export default function TicketConfig() {
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-muted-foreground px-1">Vista previa</p>
                   <DiscordEmbedPreview
-                    title={values.embedTitle || "Sistema de Tickets"}
-                    description={values.embedDescription || "Haz clic en el botón para abrir un ticket de soporte."}
-                    color={values.embedColor || "#5865F2"}
+                    title={values.embedTitle || "🎫 Sistema de Tickets"}
+                    description={values.embedDescription || "¿Tienes alguna duda, problema o sugerencia?\n\nAbre un ticket y nuestro equipo te atenderá."}
+                    color={values.embedColor || "#FEE75C"}
                     buttonLabel={values.buttonLabel || "Abrir Ticket"}
+                    buttonEmoji={values.buttonEmoji || "🎫"}
                   />
                 </div>
               </div>
