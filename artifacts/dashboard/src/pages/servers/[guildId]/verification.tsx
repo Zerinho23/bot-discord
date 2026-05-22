@@ -53,8 +53,14 @@ export default function VerificationConfig() {
   const form = useForm<VerificationFormValues>({
     resolver: zodResolver(verificationSchema),
     defaultValues: {
-      enabled: false, channelId: "", roleId: "", embedTitle: "",
-      embedDescription: "", embedColor: "#5865F2", buttonLabel: "", buttonEmoji: ""
+      enabled: false,
+      channelId: "",
+      roleId: "",
+      embedTitle: "🛡️ Verificación de miembros",
+      embedDescription: "Para acceder al servidor necesitas verificar que eres humano.\n\nHaz clic en el botón de abajo y sigue las instrucciones. El proceso es rápido y seguro.",
+      embedColor: "#57F287",
+      buttonLabel: "Verificarme",
+      buttonEmoji: "✅",
     }
   });
 
@@ -223,10 +229,11 @@ export default function VerificationConfig() {
                 <div className="space-y-2">
                   <p className="text-xs font-medium text-muted-foreground px-1">Vista previa</p>
                   <DiscordEmbedPreview
-                    title={values.embedTitle || "Verificación"}
-                    description={values.embedDescription || "Presiona el botón para verificarte."}
-                    color={values.embedColor || "#5865F2"}
-                    buttonLabel={values.buttonLabel || "Verificar"}
+                    title={values.embedTitle || "🛡️ Verificación de miembros"}
+                    description={values.embedDescription || "Haz clic en el botón para verificarte."}
+                    color={values.embedColor || "#57F287"}
+                    buttonLabel={values.buttonLabel || "Verificarme"}
+                    buttonEmoji={values.buttonEmoji || "✅"}
                   />
                 </div>
               </div>
