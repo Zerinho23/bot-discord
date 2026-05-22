@@ -51,7 +51,11 @@ export default function InviteConfig() {
 
   const form = useForm<InviteFormValues>({
     resolver: zodResolver(inviteSchema),
-    defaultValues: { enabled: false, announceChannelId: "", announceMessage: "" }
+    defaultValues: {
+      enabled: false,
+      announceChannelId: "",
+      announceMessage: "¡{user} se ha unido gracias a **{inviter}**! Ya tiene **{invites}** invitaciones. 🎉",
+    }
   });
 
   useEffect(() => {
