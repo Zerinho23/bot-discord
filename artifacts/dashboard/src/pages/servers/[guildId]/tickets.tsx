@@ -14,6 +14,7 @@ import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { DiscordEmbedPreview } from "@/components/ui/DiscordEmbedPreview";
 import { ChannelSelect } from "@/components/ui/ChannelSelect";
+import { EmojiPicker } from "@/components/ui/EmojiPicker";
 import { useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
@@ -215,7 +216,12 @@ export default function TicketConfig() {
                     <FormField control={form.control} name="embedTitle" render={({ field }) => (
                       <FormItem>
                         <FormLabel>Título</FormLabel>
-                        <FormControl><Input placeholder="Sistema de Tickets" {...field} value={field.value || ''} /></FormControl>
+                        <FormControl>
+                        <div className="flex gap-2">
+                          <Input placeholder="Sistema de Tickets" {...field} value={field.value || ''} />
+                          <EmojiPicker guildId={guildId} onSelect={(e) => field.onChange((field.value || '') + e)} />
+                        </div>
+                      </FormControl>
                       </FormItem>
                     )} />
                     <FormField control={form.control} name="embedDescription" render={({ field }) => (
