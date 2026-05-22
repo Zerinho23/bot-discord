@@ -126,7 +126,15 @@ router.get("/guilds/:guildId/verification", async (req, res): Promise<void> => {
   const params = GetVerificationConfigParams.safeParse(req.params);
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
   const [config] = await db.select().from(verificationConfigsTable).where(eq(verificationConfigsTable.guildId, params.data.guildId));
-  res.json(config ?? { guildId: params.data.guildId, enabled: false });
+  res.json(config ?? {
+    guildId: params.data.guildId,
+    enabled: false,
+    embedTitle: "🛡️ Verificación de miembros",
+    embedDescription: "Para acceder al servidor necesitas verificar que eres humano.\n\nHaz clic en el botón de abajo y sigue las instrucciones. El proceso es rápido y seguro.",
+    embedColor: "#57F287",
+    buttonLabel: "Verificarme",
+    buttonEmoji: "✅",
+  });
 });
 
 router.patch("/guilds/:guildId/verification", async (req, res): Promise<void> => {
@@ -148,7 +156,15 @@ router.get("/guilds/:guildId/welcome", async (req, res): Promise<void> => {
   const params = GetWelcomeConfigParams.safeParse(req.params);
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
   const [config] = await db.select().from(welcomeConfigsTable).where(eq(welcomeConfigsTable.guildId, params.data.guildId));
-  res.json(config ?? { guildId: params.data.guildId, enabled: false, dmEnabled: false });
+  res.json(config ?? {
+    guildId: params.data.guildId,
+    enabled: false,
+    dmEnabled: false,
+    embedTitle: "¡Bienvenido/a, {user}!",
+    embedDescription: "Nos alegra tenerte en **{server}** 🎉\n\nYa somos **{memberCount}** miembros. Asegúrate de leer las reglas del servidor para disfrutar al máximo.",
+    embedColor: "#5865F2",
+    embedFooter: "InfernBOT • {server}",
+  });
 });
 
 router.patch("/guilds/:guildId/welcome", async (req, res): Promise<void> => {
@@ -204,7 +220,15 @@ router.get("/guilds/:guildId/tickets/config", async (req, res): Promise<void> =>
   const params = GetTicketConfigParams.safeParse(req.params);
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
   const [config] = await db.select().from(ticketConfigsTable).where(eq(ticketConfigsTable.guildId, params.data.guildId));
-  res.json(config ?? { guildId: params.data.guildId, enabled: false });
+  res.json(config ?? {
+    guildId: params.data.guildId,
+    enabled: false,
+    embedTitle: "🎫 Sistema de Tickets",
+    embedDescription: "¿Tienes alguna duda, problema o sugerencia?\n\nAbre un ticket y nuestro equipo de soporte te atenderá lo antes posible.",
+    embedColor: "#FEE75C",
+    buttonLabel: "Abrir Ticket",
+    buttonEmoji: "🎫",
+  });
 });
 
 router.patch("/guilds/:guildId/tickets/config", async (req, res): Promise<void> => {
@@ -279,7 +303,11 @@ router.get("/guilds/:guildId/invites/config", async (req, res): Promise<void> =>
   const params = GetInviteConfigParams.safeParse(req.params);
   if (!params.success) { res.status(400).json({ error: params.error.message }); return; }
   const [config] = await db.select().from(inviteConfigsTable).where(eq(inviteConfigsTable.guildId, params.data.guildId));
-  res.json(config ?? { guildId: params.data.guildId, enabled: false });
+  res.json(config ?? {
+    guildId: params.data.guildId,
+    enabled: false,
+    announceMessage: "¡{user} se ha unido gracias a **{inviter}**! Ya tiene **{invites}** invitaciones. 🎉",
+  });
 });
 
 router.patch("/guilds/:guildId/invites/config", async (req, res): Promise<void> => {
