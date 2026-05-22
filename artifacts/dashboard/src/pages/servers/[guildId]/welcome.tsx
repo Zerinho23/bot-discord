@@ -137,16 +137,16 @@ export default function WelcomeConfig() {
       form.reset({
         enabled: config.enabled ?? false,
         channelId: config.channelId ?? "",
-        autoRoleId: (config as any).autoRoleId ?? "",
+        autoRoleId: config.autoRoleId ?? "",
         dmEnabled: config.dmEnabled ?? false,
         dmMessage: config.dmMessage ?? "",
-        embedTitle: (config as any).embedTitle ?? "",
-        embedDescription: (config as any).embedDescription ?? "",
-        embedColor: (config as any).embedColor ?? "#5865F2",
-        embedImage: (config as any).embedImage ?? "",
-        embedThumbnail: (config as any).embedThumbnail ?? "",
-        embedAuthorName: (config as any).embedAuthorName ?? "",
-        embedFooter: (config as any).embedFooter ?? "",
+        embedTitle: config.embedTitle ?? "",
+        embedDescription: config.embedDescription ?? "",
+        embedColor: config.embedColor ?? "#5865F2",
+        embedImage: config.embedImage ?? "",
+        embedThumbnail: config.embedThumbnail ?? "",
+        embedAuthorName: config.embedAuthorName ?? "",
+        embedFooter: config.embedFooter ?? "",
       });
     }
   }, [config, form]);
@@ -167,7 +167,7 @@ export default function WelcomeConfig() {
         embedThumbnail: data.embedThumbnail || null,
         embedAuthorName: data.embedAuthorName || null,
         embedFooter: data.embedFooter || null,
-      } as any,
+      },
     });
   };
 
