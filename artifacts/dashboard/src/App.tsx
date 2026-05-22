@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 
 import Login from "@/pages/index";
 import Servers from "@/pages/servers/index";
@@ -19,13 +20,27 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Login} />
-      <Route path="/servers" component={Servers} />
-      <Route path="/servers/:guildId" component={ServerOverview} />
-      <Route path="/servers/:guildId/verification" component={VerificationConfig} />
-      <Route path="/servers/:guildId/welcome" component={WelcomeConfig} />
-      <Route path="/servers/:guildId/tickets" component={TicketConfig} />
-      <Route path="/servers/:guildId/moderation" component={ModerationConfig} />
-      <Route path="/servers/:guildId/invites" component={InviteConfig} />
+      <Route path="/servers">
+        {() => <ProtectedRoute component={Servers} />}
+      </Route>
+      <Route path="/servers/:guildId">
+        {() => <ProtectedRoute component={ServerOverview} />}
+      </Route>
+      <Route path="/servers/:guildId/verification">
+        {() => <ProtectedRoute component={VerificationConfig} />}
+      </Route>
+      <Route path="/servers/:guildId/welcome">
+        {() => <ProtectedRoute component={WelcomeConfig} />}
+      </Route>
+      <Route path="/servers/:guildId/tickets">
+        {() => <ProtectedRoute component={TicketConfig} />}
+      </Route>
+      <Route path="/servers/:guildId/moderation">
+        {() => <ProtectedRoute component={ModerationConfig} />}
+      </Route>
+      <Route path="/servers/:guildId/invites">
+        {() => <ProtectedRoute component={InviteConfig} />}
+      </Route>
       <Route component={NotFound} />
     </Switch>
   );
