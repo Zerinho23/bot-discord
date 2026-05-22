@@ -1,4 +1,4 @@
-import { Interaction, EmbedBuilder, PermissionFlagsBits, TextChannel, CategoryChannel } from "discord.js";
+import { Interaction, EmbedBuilder, PermissionFlagsBits, TextChannel, CategoryChannel, ActionRowBuilder, ButtonBuilder, ButtonStyle } from "discord.js";
 import { db } from "@workspace/db";
 import {
   verificationConfigsTable,
@@ -197,7 +197,6 @@ export async function onInteractionCreate(interaction: Interaction): Promise<voi
           .setColor(0x5865f2)
           .setTimestamp();
 
-        const { ActionRowBuilder, ButtonBuilder, ButtonStyle } = await import("discord.js");
         const closeBtn = new ButtonBuilder()
           .setCustomId("close_ticket")
           .setLabel("🔒 Cerrar Ticket")
