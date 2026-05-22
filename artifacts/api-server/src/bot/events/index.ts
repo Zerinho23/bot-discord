@@ -8,7 +8,7 @@ import { onGuildCreate } from "./guildCreate";
 import { onMessageCreate } from "./messageCreate";
 
 export function registerEvents(client: Client): void {
-  client.once("ready", onReady);
+  client.once("clientReady", onReady);
   client.on("guildMemberAdd", onGuildMemberAdd);
   client.on("interactionCreate", onInteractionCreate);
   client.on("inviteCreate", onInviteCreate);
