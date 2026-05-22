@@ -20,4 +20,13 @@ Node.prototype.insertBefore = function <T extends Node>(
   return _origInsertBefore.call(this, newNode, referenceNode) as T;
 };
 
+const _origReplaceChild = Node.prototype.replaceChild;
+Node.prototype.replaceChild = function <T extends Node>(
+  newChild: Node,
+  oldChild: T
+): T {
+  if (oldChild.parentNode !== this) return oldChild;
+  return _origReplaceChild.call(this, newChild, oldChild) as T;
+};
+
 createRoot(document.getElementById("root")!).render(<App />);
