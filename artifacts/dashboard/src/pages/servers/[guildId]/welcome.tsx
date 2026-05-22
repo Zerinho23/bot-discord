@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/form";
 import { DiscordEmbedPreview } from "@/components/ui/DiscordEmbedPreview";
 import { ChannelSelect } from "@/components/ui/ChannelSelect";
+import { EmojiPicker } from "@/components/ui/EmojiPicker";
 import { useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { UserPlus, Send, Settings, MessageSquare, Eye, Palette, Sparkles } from "lucide-react";
@@ -429,7 +430,10 @@ export default function WelcomeConfig() {
                           <FormItem>
                             <FormLabel>Autor (pequeño texto arriba del título)</FormLabel>
                             <FormControl>
+                              <div className="flex gap-2">
                               <Input placeholder="Ej: {server} · Bienvenida" {...field} value={field.value || ""} />
+                              <EmojiPicker guildId={guildId} onSelect={(e) => field.onChange((field.value || '') + e)} />
+                            </div>
                             </FormControl>
                           </FormItem>
                         )}
@@ -441,7 +445,10 @@ export default function WelcomeConfig() {
                           <FormItem>
                             <FormLabel>Título</FormLabel>
                             <FormControl>
+                              <div className="flex gap-2">
                               <Input placeholder="¡Bienvenido/a, {user}!" {...field} value={field.value || ""} />
+                              <EmojiPicker guildId={guildId} onSelect={(e) => field.onChange((field.value || '') + e)} />
+                            </div>
                             </FormControl>
                           </FormItem>
                         )}
